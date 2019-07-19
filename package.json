@@ -1,0 +1,56 @@
+{
+  "name": "dev-env-react",
+  "version": "1.0.0-alpha.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack && webpack-dev-server"
+  },
+  "author": "Zachintosh",
+  "license": "MIT",
+  "preferGlobal": true,
+  "devDependencies": {
+    "@babel/core": "^7.5.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/preset-env": "^7.5.4",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "file-loader": "^4.0.0",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.5.0",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/runtime": "^7.5.4",
+    "@babel/runtime-corejs2": "^7.5.4",
+    "@babel/runtime-corejs3": "^7.5.4",
+    "@emotion/babel-preset-css-prop": "^10.0.14",
+    "@emotion/core": "^10.0.14",
+    "@fs/zion-root": "^1.2.0",
+    "@fs/zion-router": "^2.0.0",
+    "@fs/zion-ui": "^1.0.3",
+    "@material-ui/core": "^4.2.1",
+    "@material-ui/icons": "^4.2.1",
+    "babel-plugin-emotion": "^10.0.14",
+    "cache-loader": "^4.1.0",
+    "core-js": "^3.1.4",
+    "dotenv-webpack": "^1.7.0",
+    "html-webpack-plugin": "^3.2.0",
+    "i18next": "^17.0.6",
+    "imports-loader": "^0.8.0",
+    "parse-prop-types": "^0.3.0",
+    "react": "^16.8.6",
+    "react-docgen": "^4.1.1",
+    "react-dom": "^16.8.6",
+    "react-i18next": "^10.11.4",
+    "script-loader": "^0.7.2",
+    "svg-inline-loader": "^0.8.0",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "bin": {
+    "dev": "./bin/launch-demo.js"
+  }
+}
