@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField'
 export default function StringNumberInput({
   type,
   propName,
-  propStates,
+  value = '',
   propObj,
   updatePropState,
 }) {
@@ -15,7 +15,7 @@ export default function StringNumberInput({
       label={propName}
       variant="outlined"
       defaultValue={defaultValue ? defaultValue.value : ''}
-      value={propStates[propName]}
+      value={value}
       required={required}
       margin="dense"
       type={type}

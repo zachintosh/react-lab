@@ -45,9 +45,14 @@ const styles = {
   `,
 }
 
-const { displayName, props } = process.env.COMPONENT_INFO
-
-export default function PropsDrawer({ propStates, setPropStates, open, setOpen }) {
+export default function PropsDrawer({
+  propObjects,
+  displayName,
+  propStates,
+  setPropStates,
+  open,
+  setOpen,
+}) {
   function updatePropState(propName, newState) {
     setPropStates(oldPropStates => ({
       ...oldPropStates,
@@ -62,7 +67,7 @@ export default function PropsDrawer({ propStates, setPropStates, open, setOpen }
           updatePropState={updatePropState}
           propName={propName}
           propObj={propObj}
-          propStates={propStates}
+          value={propStates[propName]}
           type="string"
         />
       ),
@@ -71,7 +76,7 @@ export default function PropsDrawer({ propStates, setPropStates, open, setOpen }
           updatePropState={updatePropState}
           propName={propName}
           propObj={propObj}
-          propStates={propStates}
+          value={propStates[propName]}
           type="number"
         />
       ),
@@ -94,29 +99,28 @@ export default function PropsDrawer({ propStates, setPropStates, open, setOpen }
         <ObjectInput
           updatePropState={updatePropState}
           propName={propName}
-          propObj={propObj}
-          propState={propStates[propName]}
+          value={propStates[propName]}
         />
       ),
       shape: (
         <ObjectInput
           updatePropState={updatePropState}
           propName={propName}
-          propObj={propObj}
-          propState={propStates[propName]}
+          value={propStates[propName]}
         />
       ),
     }
     return <div key={propName}>{inputMap[propObj.type.name] || propName}</div>
   }
 
-  const entries = Object.entries(props)
+  const entries = Object.entries(propObjects)
   const inputs = entries.reduce((acc, entry) => {
     if (!acc[entry[1].type.name]) acc[entry[1].type.name] = []
     acc[entry[1].type.name].push(entry)
     return acc
   }, {})
-  console.log('INPUTS', inputs)
+
+  if (!displayName || !propObjects) return null
 
   return (
     <div className="demo-font" css={styles.drawerContainer}>

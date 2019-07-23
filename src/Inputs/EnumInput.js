@@ -6,6 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel'
 import { removeQuotes } from '../lib/helpers'
 
 export default function EnumInput({ propName, value, propObj, updatePropState }) {
+  // The value prop needs a default of a space to fix the input's label, for some reason...
   const inputLabel = React.useRef(null)
   const [labelWidth, setLabelWidth] = React.useState(0)
   React.useEffect(() => {

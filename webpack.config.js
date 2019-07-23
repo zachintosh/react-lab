@@ -46,7 +46,12 @@ module.exports = {
       'process.env.COMPONENT_INFO': JSON.stringify(componentInfo),
     }),
     // Generates the HTML file for the demo
-    new HtmlWebpackPlugin({ title: componentInfo.displayName, filename: 'index.html' }),
+    new HtmlWebpackPlugin({
+      title: componentInfo.displayName,
+      // template: path.resolve(__dirname, 'main.html'),
+      // excludeChunks: ['render-demo'],
+      // inject: true,
+    }),
   ],
 
   resolve: {
@@ -66,7 +71,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '/'),
     publicPath: '/',
     filename: '[name].js', // Has to be name for some reason? Anything else doesn't load render-demo
     libraryTarget: 'umd', // make the bundle export
@@ -142,12 +147,5 @@ module.exports = {
         loader: 'svg-inline-loader',
       },
     ],
-  },
-
-  devServer: {
-    contentBase: path.resolve(__dirname, 'public'),
-    compress: true,
-    port: 5000,
-    hot: true,
   },
 }

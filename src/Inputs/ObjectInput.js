@@ -1,8 +1,8 @@
 import React from 'react'
 import { css } from '@emotion/core'
 import AceEditor from 'react-ace'
-import 'brace/mode/javascript'
-import 'brace/theme/tomorrow_night_bright'
+import 'brace/mode/json'
+import 'brace/theme/github'
 
 const styles = {
   objectContainer: css`
@@ -28,7 +28,8 @@ const styles = {
   `,
 }
 
-export default function ObjectInput({ propName, propState, updatePropState }) {
+export default function ObjectInput({ propName, value, updatePropState }) {
+  console.log('TCL: ObjectInput -> value', value)
   const editorRef = React.useRef()
 
   const labelCss = css`
@@ -59,10 +60,10 @@ export default function ObjectInput({ propName, propState, updatePropState }) {
     <div css={[styles.objectContainer, labelCss]}>
       <AceEditor
         ref={editorRef}
-        mode="javascript"
+        mode="json"
         showPrintMargin={false}
-        value={JSON.stringify(propState, null, 4)}
-        theme="tomorrow_night"
+        value={JSON.stringify(value, null, 4)}
+        theme="github"
         name={propName}
         maxLines="20"
         scrollMargin="12px 0"

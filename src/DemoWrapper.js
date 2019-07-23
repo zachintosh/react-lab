@@ -44,7 +44,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function DemoWrapper({ children, propStates, setPropStates }) {
+export default function DemoWrapper({
+  propObjects,
+  displayName,
+  children,
+  propStates,
+  setPropStates,
+}) {
   const [open, setOpen] = useState(true)
   const classes = useStyles()
 
@@ -53,13 +59,17 @@ export default function DemoWrapper({ children, propStates, setPropStates }) {
     <div css={styles.demoContainer}>
       <Global styles={styles.global} />
       <main className={`${classes.content} ${open && classes.contentShift}`}>
+        {/* PROPS DRAWER */}
         <PropsDrawer
           propStates={propStates}
           setPropStates={setPropStates}
           open={open}
           setOpen={setOpen}
+          displayName={displayName}
+          propObjects={propObjects}
         />
 
+        {/* DEMO OPTIONS */}
         <DemoOptions open={open} setOpen={setOpen} />
 
         {/* <CustomWrapper> */}
