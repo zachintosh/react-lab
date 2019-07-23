@@ -1,7 +1,13 @@
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
 
-export default function StringNumberInput({type, propName, propStates, propObj, updatePropState}) {
+export default function StringNumberInput({
+  type,
+  propName,
+  propStates,
+  propObj,
+  updatePropState,
+}) {
   const { defaultValue, required } = propObj
   return (
     <TextField
@@ -13,7 +19,7 @@ export default function StringNumberInput({type, propName, propStates, propObj, 
       required={required}
       margin="dense"
       type={type}
-      onChange={(e) => updatePropState(propName, e.target.value)}
+      onChange={e => updatePropState(propName, e.target.value)}
     />
   )
 }

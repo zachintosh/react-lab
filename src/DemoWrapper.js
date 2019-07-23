@@ -1,22 +1,29 @@
 import React, { useState } from 'react'
-import Root from '@fs/zion-root'
-import DemoOptions from './DemoOptions'
-import { Router, AuthRoute } from '@fs/zion-router'
-import { css } from '@emotion/core'
+import { Global, css } from '@emotion/core'
 import { makeStyles } from '@material-ui/core/styles'
+// import CustomWrapper from './CustomWrapper'
+import DemoOptions from './DemoOptions'
 import PropsDrawer from './PropsDrawer'
-
-// This is where you pass data from the server to the client using the SERVER_DATA global.
-// Here we pass the mounted app path from the server to the client.
-const base = window.SERVER_DATA ? new URL(window.SERVER_DATA.appPath).pathname : ''
 
 const styles = {
   wrapper: css`
-    padding-top: 20px;
+    padding: 12px;
+    width: fit-content;
   `,
   demoContainer: css`
     display: flex;
-  `
+  `,
+  global: css`
+    body {
+      margin: 0;
+    }
+    .demo-font {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+        'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  `,
 }
 
 const useStyles = makeStyles(theme => ({
@@ -34,25 +41,30 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 400,
-  }
+  },
 }))
 
 export default function DemoWrapper({ children, propStates, setPropStates }) {
   const [open, setOpen] = useState(true)
-  const classes = useStyles();
+  const classes = useStyles()
 
   const Children = <div css={styles.wrapper}>{children}</div>
   return (
     <div css={styles.demoContainer}>
+      <Global styles={styles.global} />
       <main className={`${classes.content} ${open && classes.contentShift}`}>
-        <PropsDrawer propStates={propStates} setPropStates={setPropStates} open={open} setOpen={setOpen} />
+        <PropsDrawer
+          propStates={propStates}
+          setPropStates={setPropStates}
+          open={open}
+          setOpen={setOpen}
+        />
+
         <DemoOptions open={open} setOpen={setOpen} />
-        <Root header={false} footer={false}>
-          <Router basename={base}>
-            {/* <AuthRoute path="/" component={Children} /> */}
-            {Children}
-          </Router>
-        </Root>
+
+        {/* <CustomWrapper> */}
+        {Children}
+        {/* </CustomWrapper> */}
       </main>
     </div>
   )

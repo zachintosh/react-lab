@@ -2,11 +2,12 @@
 
 // node.js server used to serve assets bundled by Webpack
 // use `npm start` command to launch the server.
-const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
-const config = require('../webpack.config');
-const port = 5000;
-const path = require('path');
+const webpack = require('webpack')
+const WebpackDevServer = require('webpack-dev-server')
+const path = require('path')
+const config = require('../webpack.config')
+
+const port = 8080
 
 const options = {
   publicPath: config.output.publicPath,
@@ -28,10 +29,10 @@ const options = {
   },
 }
 
-const server = new WebpackDevServer(webpack(config), options);
+const server = new WebpackDevServer(webpack(config), options)
 
-server.listen(port, function (err) {
+server.listen(port, err => {
   if (err) {
-    console.log(err);
+    console.log(err)
   }
 })

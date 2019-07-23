@@ -3,18 +3,18 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const fs = require('fs')
 
-const reactDocs = require('react-docgen');
+const reactDocs = require('react-docgen')
 
 // This will attempt to:
 // 1. find the target component in the current directory
 // 2. find the target component in the src directory
 // 3. look at the package.json main entry to find the file if a target component name isn't provided
 
-let filePath;
+let filePath
+const fileName = process.argv[2]
 if (process.argv[2]) {
-  const fileName = process.argv[2].includes('.js') ? process.argv[2] : process.argv[2] + '.js'
-  const currDirPath = path.resolve('.', fileName)
-  const srcDirPath = path.resolve('.', 'src', fileName)
+  const currDirPath = path.resolve('.', `${fileName}.js`)
+  const srcDirPath = path.resolve('.', 'src', `${fileName}.js`)
   const isInCurrentDir = fs.existsSync(currDirPath)
   const isInSrcDir = fs.existsSync(srcDirPath)
   filePath = (isInCurrentDir && currDirPath) || (isInSrcDir && srcDirPath)
@@ -23,46 +23,48 @@ if (process.argv[2]) {
   filePath = path.resolve(packageJson.main)
 }
 
-if (!filePath) console.error('No file available under the name ' + fileName)
+if (!filePath) console.error(`No file available on path: ${fileName}`)
 
 const fileContents = fs.readFileSync(filePath, 'utf8')
-const componentInfo = reactDocs.parse(fileContents);
+const componentInfo = reactDocs.parse(fileContents)
 
 module.exports = {
   context: path.resolve('.', 'src'),
   mode: 'production',
   cache: true,
-  
+
   // Enables source maps
   devtool: 'source-map',
-  
+
   entry: {
     'render-demo': path.resolve(__dirname, 'src/DemoRenderer.js'),
   },
-  
+
   plugins: [
+    // Passes on the info about the component
     new webpack.DefinePlugin({
-      'process.env.COMPONENT_INFO': JSON.stringify(componentInfo)
+      'process.env.COMPONENT_INFO': JSON.stringify(componentInfo),
     }),
-    new HtmlWebpackPlugin({ filename: 'index.html' }),
+    // Generates the HTML file for the demo
+    new HtmlWebpackPlugin({ title: componentInfo.displayName, filename: 'index.html' }),
   ],
-  
+
   resolve: {
     symlinks: false,
     alias: {
       // Resolve the path to the target demo
-      'DemoFile': filePath,
+      DemoFile: filePath,
       // Resolve the path to React so we don't import multiple react versions
-      'react': path.resolve(__dirname, './node_modules/react'),
+      react: path.resolve(__dirname, './node_modules/react'),
       'parse-prop-types': path.resolve(__dirname, 'node_modules', 'parse-prop-types'),
     },
   },
-  
+
   // This needed so svg-inline-loader (and others) will work correctly
   resolveLoader: {
-    modules: [path.join(__dirname, 'node_modules')]
+    modules: [path.join(__dirname, 'node_modules')],
   },
-  
+
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
@@ -80,28 +82,28 @@ module.exports = {
         vendor: {
           test: /[\\/]node_modules[\\/](?!@fs)/,
           name: 'vendors',
-          chunks: 'all'
+          chunks: 'all',
         },
         fs: {
           test: /[\\/]node_modules[\\/]@fs[\\/]/,
           name: 'fs',
-          chunks: 'all'
+          chunks: 'all',
         },
         targetComponent: {
           test: path.resolve('.', 'src'),
           name: 'target-component',
-          chunks: 'all'
-        }
+          chunks: 'all',
+        },
       },
       chunks: 'all',
-    }
+    },
   },
 
   module: {
     rules: [
       {
         test: /demo\.js/,
-        loader: 'imports-loader?parsePropTypes=parse-prop-types'
+        loader: 'imports-loader?parsePropTypes=parse-prop-types',
       },
       {
         test: /\.js$/,
@@ -109,28 +111,35 @@ module.exports = {
           path.resolve('.', 'src'),
           path.resolve(__dirname, 'src'),
           path.resolve(__dirname, 'node_modules/@fs'),
-          path.resolve('node_modules/@fs')
+          path.resolve('node_modules/@fs'),
         ],
         exclude: /node_modules\/(?!@fs)/,
-        use: ['cache-loader', {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            presets: ['@babel/preset-react', ['@babel/preset-env', { targets: { node: 'current'}}], '@emotion/babel-preset-css-prop'],
-            plugins: [
-              ['babel-plugin-emotion', { sourceMaps: true }],
-              '@babel/plugin-syntax-dynamic-import',
-            ]
-          }
-        }]
+        use: [
+          'cache-loader',
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              presets: [
+                '@babel/preset-react',
+                ['@babel/preset-env', { targets: { node: 'current' } }],
+                '@emotion/babel-preset-css-prop',
+              ],
+              plugins: [
+                ['babel-plugin-emotion', { sourceMaps: true }],
+                '@babel/plugin-syntax-dynamic-import',
+              ],
+            },
+          },
+        ],
       },
       {
         test: /\.(html|png)$/,
-        loader: "file-loader?name=[name].[ext]",
+        loader: 'file-loader?name=[name].[ext]',
       },
       {
         test: /\.svg$/,
-        loader: 'svg-inline-loader'
+        loader: 'svg-inline-loader',
       },
     ],
   },
@@ -139,6 +148,6 @@ module.exports = {
     contentBase: path.resolve(__dirname, 'public'),
     compress: true,
     port: 5000,
-    hot: true
-  }
+    hot: true,
+  },
 }

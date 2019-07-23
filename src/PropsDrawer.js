@@ -1,26 +1,29 @@
-import React, { useState } from 'react'
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import React from 'react'
+import Drawer from '@material-ui/core/Drawer'
+import IconButton from '@material-ui/core/IconButton'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import Divider from '@material-ui/core/Divider'
 import { css } from '@emotion/core'
 import amber from '@material-ui/core/colors/amber'
 import StringNumberInput from './Inputs/StringNumberInput'
 import BooleanInput from './Inputs/BooleanInput'
 import EnumInput from './Inputs/EnumInput'
+import ObjectInput from './Inputs/ObjectInput'
 
 const styles = {
   drawerHeader: css`
-    padding: 8px 8px 8px 16px;
+    padding: 0 8px 0 16px;
     display: flex;
     justify-content: space-between;
     align-content: center;
     align-items: center;
+    box-sizing: border-box;
   `,
   propsContainer: css`
     padding: 8px 16px;
     width: 400px;
+    box-sizing: border-box;
     max-width: 400px;
     display: grid;
     grid-row-gap: 8px;
@@ -42,41 +45,82 @@ const styles = {
   `,
 }
 
-const { displayName, description, props } = process.env.COMPONENT_INFO
+const { displayName, props } = process.env.COMPONENT_INFO
 
 export default function PropsDrawer({ propStates, setPropStates, open, setOpen }) {
-
   function updatePropState(propName, newState) {
-    setPropStates(oldPropStates => {
-      return {
-        ...oldPropStates,
-        [propName]: newState,
-      }
-    })
+    setPropStates(oldPropStates => ({
+      ...oldPropStates,
+      [propName]: newState,
+    }))
   }
 
   function getInput([propName, propObj]) {
     const inputMap = {
-      string: <StringNumberInput updatePropState={updatePropState} propName={propName} propObj={propObj} propStates={propStates} type="string" />,
-      number: <StringNumberInput updatePropState={updatePropState} propName={propName} propObj={propObj} propStates={propStates} type="number" />,
-      bool: <BooleanInput updatePropState={updatePropState} propName={propName} propObj={propObj} value={propStates[propName]} />,
-      enum: <EnumInput updatePropState={updatePropState} propName={propName} propObj={propObj} value={propStates[propName]} />,
+      string: (
+        <StringNumberInput
+          updatePropState={updatePropState}
+          propName={propName}
+          propObj={propObj}
+          propStates={propStates}
+          type="string"
+        />
+      ),
+      number: (
+        <StringNumberInput
+          updatePropState={updatePropState}
+          propName={propName}
+          propObj={propObj}
+          propStates={propStates}
+          type="number"
+        />
+      ),
+      bool: (
+        <BooleanInput
+          updatePropState={updatePropState}
+          propName={propName}
+          value={propStates[propName]}
+        />
+      ),
+      enum: (
+        <EnumInput
+          updatePropState={updatePropState}
+          propName={propName}
+          propObj={propObj}
+          value={propStates[propName]}
+        />
+      ),
+      object: (
+        <ObjectInput
+          updatePropState={updatePropState}
+          propName={propName}
+          propObj={propObj}
+          propState={propStates[propName]}
+        />
+      ),
+      shape: (
+        <ObjectInput
+          updatePropState={updatePropState}
+          propName={propName}
+          propObj={propObj}
+          propState={propStates[propName]}
+        />
+      ),
     }
     return <div key={propName}>{inputMap[propObj.type.name] || propName}</div>
   }
 
   const entries = Object.entries(props)
-  const stringInputs = entries.filter(([propName, propObj]) => propObj.type.name === 'string' || propObj.type.name === 'number')
-  const booleanInputs = entries.filter(([propName, propObj]) => propObj.type.name === 'bool')
-  const enumInputs = entries.filter(([propName, propObj]) => propObj.type.name === 'enum')
+  const inputs = entries.reduce((acc, entry) => {
+    if (!acc[entry[1].type.name]) acc[entry[1].type.name] = []
+    acc[entry[1].type.name].push(entry)
+    return acc
+  }, {})
+  console.log('INPUTS', inputs)
 
   return (
-    <div css={styles.drawerContainer}>
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
+    <div className="demo-font" css={styles.drawerContainer}>
+      <Drawer variant="persistent" anchor="left" open={open}>
         <div css={styles.drawerHeader}>
           <h4>{displayName}</h4>
           <IconButton onClick={() => setOpen(false)}>
@@ -86,9 +130,12 @@ export default function PropsDrawer({ propStates, setPropStates, open, setOpen }
         <Divider />
         {/* <div css={styles.description}>{description}</div> */}
         <div css={styles.propsContainer}>
-          {stringInputs.map(getInput)}
-          {enumInputs.map(getInput)}
-          {booleanInputs.map(getInput)}
+          {inputs.string && inputs.string.map(getInput)}
+          {inputs.number && inputs.number.map(getInput)}
+          {inputs.enum && inputs.enum.map(getInput)}
+          {inputs.object && inputs.object.map(getInput)}
+          {inputs.shape && inputs.shape.map(getInput)}
+          {inputs.bool && inputs.bool.map(getInput)}
         </div>
       </Drawer>
     </div>
