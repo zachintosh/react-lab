@@ -83,18 +83,12 @@ function ComponentDemo() {
 
   useEffect(() => {
     socket.addEventListener('message', e => {
-      console.log('received')
       const message = JSON.parse(e.data)
       setComponentInfo(message)
     })
   }, [])
 
   useEffect(() => {
-    console.log('PROP STATES', propStates)
-  }, [propStates])
-
-  useEffect(() => {
-    console.log('UPDATED')
     if (!componentInfo) return
     const key = `${componentInfo.displayName}_props`
     setKey(key)

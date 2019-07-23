@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { Global, css } from '@emotion/core'
-import { makeStyles } from '@material-ui/core/styles'
-// import CustomWrapper from './CustomWrapper'
 import DemoOptions from './DemoOptions'
 import PropsDrawer from './PropsDrawer'
+import useLocalStorage from './useLocalStorage'
 
 const styles = {
   wrapper: css`
@@ -12,6 +11,9 @@ const styles = {
   `,
   demoContainer: css`
     display: flex;
+  `,
+  contents: css`
+    flex-grow: 1;
   `,
   global: css`
     body {
@@ -26,24 +28,6 @@ const styles = {
   `,
 }
 
-const useStyles = makeStyles(theme => ({
-  content: {
-    flexGrow: 1,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 400,
-  },
-}))
-
 export default function DemoWrapper({
   propObjects,
   displayName,
@@ -51,14 +35,21 @@ export default function DemoWrapper({
   propStates,
   setPropStates,
 }) {
-  const [open, setOpen] = useState(true)
-  const classes = useStyles()
+  const [open, setOpen] = useLocalStorage('propsDrawerOpen', true)
+  const [width, setWidth] = useLocalStorage('propsDrawerWidth', 400)
+
+  const contentCss = css`
+    /* flex-grow: 1; */
+    /* margin-left: ${open ? `${width + 4}px` : 0}; */
+    display: flex;
+    width: 100%;
+  `
 
   const Children = <div css={styles.wrapper}>{children}</div>
   return (
     <div css={styles.demoContainer}>
       <Global styles={styles.global} />
-      <main className={`${classes.content} ${open && classes.contentShift}`}>
+      <main css={contentCss}>
         {/* PROPS DRAWER */}
         <PropsDrawer
           propStates={propStates}
@@ -67,14 +58,17 @@ export default function DemoWrapper({
           setOpen={setOpen}
           displayName={displayName}
           propObjects={propObjects}
+          width={width}
+          setWidth={setWidth}
         />
 
-        {/* DEMO OPTIONS */}
-        <DemoOptions open={open} setOpen={setOpen} />
+        <div css={styles.contents}>
+          {/* DEMO OPTIONS */}
+          <DemoOptions open={open} setOpen={setOpen} />
 
-        {/* <CustomWrapper> */}
-        {Children}
-        {/* </CustomWrapper> */}
+          {/* DEMO COMPONENT */}
+          {Children}
+        </div>
       </main>
     </div>
   )

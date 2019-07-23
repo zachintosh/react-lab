@@ -1,5 +1,5 @@
-import React from 'react'
-import Drawer from '@material-ui/core/Drawer'
+import React, { useState, useEffect, useRef } from 'react'
+// import Drawer from '@material-ui/core/Drawer'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
@@ -22,9 +22,7 @@ const styles = {
   `,
   propsContainer: css`
     padding: 8px 16px;
-    width: 400px;
     box-sizing: border-box;
-    max-width: 400px;
     display: grid;
     grid-row-gap: 8px;
 
@@ -38,10 +36,21 @@ const styles = {
       color: ${amber[900]};
     }
   `,
-  description: css`
-    width: 400px;
-    font-size: 12px;
-    padding: 8px;
+  grid: css`
+    display: grid;
+    grid-template-columns: max-content 4px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  `,
+  draggableSide: css`
+    cursor: ew-resize;
+    width: 4px;
+    border-right: solid 1px rgba(0, 0, 0, 0.12);
+  `,
+  contents: css`
+    height: 100vh;
+    overflow-y: scroll;
+    width: calc(100% + 1px);
   `,
 }
 
@@ -52,7 +61,11 @@ export default function PropsDrawer({
   setPropStates,
   open,
   setOpen,
+  width,
+  setWidth,
 }) {
+  const widthRef = useRef(width)
+
   function updatePropState(propName, newState) {
     setPropStates(oldPropStates => ({
       ...oldPropStates,
@@ -113,6 +126,27 @@ export default function PropsDrawer({
     return <div key={propName}>{inputMap[propObj.type.name] || propName}</div>
   }
 
+  const mouseMove = ({ screenX }) => {
+    const { current } = widthRef
+    if ((screenX < current - 5 || screenX > current + 5) && screenX > 264) {
+      setWidth(screenX)
+    }
+  }
+
+  const mouseUp = () => {
+    document.removeEventListener('mousemove', mouseMove)
+  }
+
+  const dragStart = () => {
+    document.addEventListener('mousemove', mouseMove)
+    document.addEventListener('mouseup', mouseUp, { once: true })
+  }
+
+  // This is dumb, but it lets the event listeners get a current value
+  useEffect(() => {
+    widthRef.current = width
+  }, [width])
+
   const entries = Object.entries(propObjects)
   const inputs = entries.reduce((acc, entry) => {
     if (!acc[entry[1].type.name]) acc[entry[1].type.name] = []
@@ -121,10 +155,17 @@ export default function PropsDrawer({
   }, {})
 
   if (!displayName || !propObjects) return null
-
+  console.log(open)
   return (
-    <div className="demo-font" css={styles.drawerContainer}>
-      <Drawer variant="persistent" anchor="left" open={open}>
+    <div
+      className="demo-font"
+      css={styles.drawerContainer}
+      style={{ marginLeft: open ? 0 : (width + 4) * -1 }}
+    >
+      {/* <Drawer transitionDuration={100} variant="persistent" anchor="left" open={open}> */}
+      {/* HEADER */}
+
+      <div css={styles.contents}>
         <div css={styles.drawerHeader}>
           <h4>{displayName}</h4>
           <IconButton onClick={() => setOpen(false)}>
@@ -132,16 +173,21 @@ export default function PropsDrawer({
           </IconButton>
         </div>
         <Divider />
-        {/* <div css={styles.description}>{description}</div> */}
-        <div css={styles.propsContainer}>
-          {inputs.string && inputs.string.map(getInput)}
-          {inputs.number && inputs.number.map(getInput)}
-          {inputs.enum && inputs.enum.map(getInput)}
-          {inputs.object && inputs.object.map(getInput)}
-          {inputs.shape && inputs.shape.map(getInput)}
-          {inputs.bool && inputs.bool.map(getInput)}
+
+        {/* PROP INPUTS */}
+        <div css={styles.grid}>
+          <div css={styles.propsContainer} style={{ width }}>
+            {inputs.string && inputs.string.map(getInput)}
+            {inputs.number && inputs.number.map(getInput)}
+            {inputs.enum && inputs.enum.map(getInput)}
+            {inputs.object && inputs.object.map(getInput)}
+            {inputs.shape && inputs.shape.map(getInput)}
+            {inputs.bool && inputs.bool.map(getInput)}
+          </div>
+          <div css={styles.draggableSide} onMouseDown={dragStart} />
         </div>
-      </Drawer>
+      </div>
+      {/* </Drawer> */}
     </div>
   )
 }

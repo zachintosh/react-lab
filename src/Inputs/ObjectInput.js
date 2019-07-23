@@ -10,8 +10,9 @@ const styles = {
     border: solid 1px rgba(0, 0, 0, 0.23);
     padding-top: 8px;
     border-radius: 4px;
-    width: 368px;
+    width: 100%;
     position: relative;
+    box-sizing: border-box;
     margin-top: 8px;
 
     & .ace_editor {
@@ -29,7 +30,6 @@ const styles = {
 }
 
 export default function ObjectInput({ propName, value, updatePropState }) {
-  console.log('TCL: ObjectInput -> value', value)
   const editorRef = React.useRef()
 
   const labelCss = css`
