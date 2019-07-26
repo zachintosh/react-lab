@@ -27,9 +27,25 @@ const styles = {
       margin-top: 7px;
     }
   `,
+  warnings: css`
+    margin: 0;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.23);
+    max-width: 100%;
+    overflow-x: scroll;
+  `,
+  warning: css`
+    color: red;
+    padding: 4px 0;
+    margin: 0;
+    max-width: 100%;
+    overflow-x: scroll;
+    font-size: 12px;
+  `,
 }
 
-export default function ObjectInput({ propName, value, updatePropState }) {
+export default function ObjectInput({ propName, value, updatePropState, warnings = [] }) {
   const editorRef = React.useRef()
 
   const labelCss = css`
@@ -58,6 +74,11 @@ export default function ObjectInput({ propName, value, updatePropState }) {
 
   return (
     <div css={[styles.objectContainer, labelCss]}>
+      <div css={styles.warnings}>
+        {warnings.map(warning => (
+          <div css={styles.warning}>{warning}</div>
+        ))}
+      </div>
       <AceEditor
         ref={editorRef}
         mode="json"

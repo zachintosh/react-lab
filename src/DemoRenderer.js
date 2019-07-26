@@ -92,7 +92,7 @@ function ComponentDemo() {
     if (!componentInfo) return
     const key = `${componentInfo.displayName}_props`
     setKey(key)
-    const storedValues = JSON.parse(localStorage.getItem(key))
+    const storedValues = JSON.parse(localStorage.getItem(key)) || {}
     const defaultValues = getPropStateDefaults(componentInfo.props)
     const currentValues = Object.entries(storedValues).reduce((acc, [propName, value]) => {
       if (value) acc[propName] = value
@@ -102,8 +102,8 @@ function ComponentDemo() {
     setPropStates(currentValues)
   }, [componentInfo])
 
+  console.log('TCL: ComponentDemo -> propStates', propStates)
   const canRenderComponent = componentInfo && canRender(componentInfo.props, propStates)
-
   return (
     <ThemeProvider theme={theme}>
       {componentInfo && propStates && (

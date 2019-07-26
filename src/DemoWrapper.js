@@ -1,18 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Global, css } from '@emotion/core'
 import DemoOptions from './DemoOptions'
 import PropsDrawer from './PropsDrawer'
 import useLocalStorage from './useLocalStorage'
+import EditDrawer from './EditDrawer'
 
 const styles = {
   wrapper: css`
     padding: 12px;
     width: fit-content;
   `,
-  demoContainer: css`
+  main: css`
     display: flex;
+    width: 100%;
+    overflow-y: scroll;
+    /* flex-grow: 1; */
+  `,
+  demoContainer: css`
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    /* grid-template-rows: minmax(min-content, 100vh) 10vh; */
+    max-height: 100vh;
+    overflow: hidden;
   `,
   contents: css`
+    overflow-y: hidden;
     flex-grow: 1;
   `,
   global: css`
@@ -35,41 +49,37 @@ export default function DemoWrapper({
   propStates,
   setPropStates,
 }) {
-  const [open, setOpen] = useLocalStorage('propsDrawerOpen', true)
+  const [propsDrawerOpen, setPropsDrawerOpen] = useLocalStorage('propsDrawerOpen', true)
+  const [editDrawerOpen, setEditDrawerOpen] = useLocalStorage('editDrawerOpen', true)
   const [width, setWidth] = useLocalStorage('propsDrawerWidth', 400)
 
-  const contentCss = css`
-    /* flex-grow: 1; */
-    /* margin-left: ${open ? `${width + 4}px` : 0}; */
-    display: flex;
-    width: 100%;
-  `
-
-  const Children = <div css={styles.wrapper}>{children}</div>
   return (
-    <div css={styles.demoContainer}>
+    <>
       <Global styles={styles.global} />
-      <main css={contentCss}>
-        {/* PROPS DRAWER */}
-        <PropsDrawer
-          propStates={propStates}
-          setPropStates={setPropStates}
-          open={open}
-          setOpen={setOpen}
-          displayName={displayName}
-          propObjects={propObjects}
-          width={width}
-          setWidth={setWidth}
-        />
+      <div css={styles.demoContainer}>
+        <main css={styles.main}>
+          {/* PROPS DRAWER */}
+          <PropsDrawer
+            propStates={propStates}
+            setPropStates={setPropStates}
+            open={propsDrawerOpen}
+            setOpen={setPropsDrawerOpen}
+            displayName={displayName}
+            propObjects={propObjects}
+            width={width}
+            setWidth={setWidth}
+          />
 
-        <div css={styles.contents}>
-          {/* DEMO OPTIONS */}
-          <DemoOptions open={open} setOpen={setOpen} />
+          <div css={styles.contents}>
+            {/* DEMO OPTIONS */}
+            <DemoOptions open={propsDrawerOpen} setOpen={setPropsDrawerOpen} />
 
-          {/* DEMO COMPONENT */}
-          {Children}
-        </div>
-      </main>
-    </div>
+            {/* DEMO COMPONENT */}
+            <div css={styles.wrapper}>{children}</div>
+          </div>
+        </main>
+        <EditDrawer open={editDrawerOpen} setOpen={setEditDrawerOpen} />
+      </div>
+    </>
   )
 }

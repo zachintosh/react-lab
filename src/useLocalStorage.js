@@ -7,6 +7,7 @@ export default function useLocalStorage(key, initialValue) {
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
     try {
+      if (!key) return null
       // Get from local storage by itemKey
       const item = window.localStorage.getItem(itemKey)
       // Parse stored json or if none return initialValue

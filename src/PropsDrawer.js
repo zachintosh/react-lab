@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
-// import Drawer from '@material-ui/core/Drawer'
+import React, { useEffect, useRef } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
@@ -10,8 +9,13 @@ import StringNumberInput from './Inputs/StringNumberInput'
 import BooleanInput from './Inputs/BooleanInput'
 import EnumInput from './Inputs/EnumInput'
 import ObjectInput from './Inputs/ObjectInput'
+import ShapeInput from './Inputs/ShapeInput'
 
 const styles = {
+  drawerContainer: css`
+    border-right: solid 1px rgba(0, 0, 0, 0.12);
+    overflow-y: scroll;
+  `,
   drawerHeader: css`
     padding: 0 8px 0 16px;
     display: flex;
@@ -25,6 +29,7 @@ const styles = {
     box-sizing: border-box;
     display: grid;
     grid-row-gap: 8px;
+    overflow-y: scroll;
 
     & .MuiFormControl-root {
       width: 100%;
@@ -39,18 +44,11 @@ const styles = {
   grid: css`
     display: grid;
     grid-template-columns: max-content 4px;
-    min-height: 100vh;
     box-sizing: border-box;
   `,
   draggableSide: css`
     cursor: ew-resize;
     width: 4px;
-    border-right: solid 1px rgba(0, 0, 0, 0.12);
-  `,
-  contents: css`
-    height: 100vh;
-    overflow-y: scroll;
-    width: calc(100% + 1px);
   `,
 }
 
@@ -65,7 +63,6 @@ export default function PropsDrawer({
   setWidth,
 }) {
   const widthRef = useRef(width)
-
   function updatePropState(propName, newState) {
     setPropStates(oldPropStates => ({
       ...oldPropStates,
@@ -116,20 +113,33 @@ export default function PropsDrawer({
         />
       ),
       shape: (
-        <ObjectInput
+        <ShapeInput
           updatePropState={updatePropState}
           propName={propName}
           value={propStates[propName]}
+          propObj={propObj}
+        />
+      ),
+      exact: (
+        <ShapeInput
+          updatePropState={updatePropState}
+          propName={propName}
+          value={propStates[propName]}
+          propObj={propObj}
+          strict
         />
       ),
     }
     return <div key={propName}>{inputMap[propObj.type.name] || propName}</div>
   }
 
-  const mouseMove = ({ screenX }) => {
+  const mouseMove = e => {
+    console.log(e)
+    const { clientX } = e
     const { current } = widthRef
-    if ((screenX < current - 5 || screenX > current + 5) && screenX > 264) {
-      setWidth(screenX)
+    console.log('TCL: mouseMove -> current', current)
+    if ((clientX < current - 5 || clientX > current + 5) && clientX > 264) {
+      setWidth(clientX)
     }
   }
 
@@ -155,19 +165,16 @@ export default function PropsDrawer({
   }, {})
 
   if (!displayName || !propObjects) return null
-  console.log(open)
   return (
     <div
       className="demo-font"
       css={styles.drawerContainer}
       style={{ marginLeft: open ? 0 : (width + 4) * -1 }}
     >
-      {/* <Drawer transitionDuration={100} variant="persistent" anchor="left" open={open}> */}
       {/* HEADER */}
-
       <div css={styles.contents}>
         <div css={styles.drawerHeader}>
-          <h4>{displayName}</h4>
+          <h4>{displayName} Props</h4>
           <IconButton onClick={() => setOpen(false)}>
             {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
@@ -182,12 +189,13 @@ export default function PropsDrawer({
             {inputs.enum && inputs.enum.map(getInput)}
             {inputs.object && inputs.object.map(getInput)}
             {inputs.shape && inputs.shape.map(getInput)}
+            {inputs.exact && inputs.exact.map(getInput)}
             {inputs.bool && inputs.bool.map(getInput)}
           </div>
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
           <div css={styles.draggableSide} onMouseDown={dragStart} />
         </div>
       </div>
-      {/* </Drawer> */}
     </div>
   )
 }

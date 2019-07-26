@@ -87,7 +87,7 @@ wss.on('connection', ws => {
   })
 })
 
-app.listen(port, err => {
+app.listen(port, '10.109.128.160', err => {
   if (err) {
     console.log(err)
   }
