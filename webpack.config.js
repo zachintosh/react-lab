@@ -46,12 +46,9 @@ module.exports = {
       'process.env.COMPONENT_INFO': JSON.stringify(componentInfo),
     }),
     // Generates the HTML file for the demo
-    new HtmlWebpackPlugin({
-      title: componentInfo.displayName,
-      // template: path.resolve(__dirname, 'main.html'),
-      // excludeChunks: ['render-demo'],
-      // inject: true,
-    }),
+    new HtmlWebpackPlugin({ title: componentInfo.displayName }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
   ],
 
   resolve: {

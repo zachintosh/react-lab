@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import DemoComponent from 'DemoFile' //eslint-disable-line
 import { createMuiTheme } from '@material-ui/core/styles'
 import amber from '@material-ui/core/colors/amber'
+import indigo from '@material-ui/core/colors/indigo'
 import { ThemeProvider } from '@material-ui/styles'
 import { css } from '@emotion/core'
 import WarningIcon from '@material-ui/icons/ErrorOutline'
@@ -12,9 +13,7 @@ import useLocalStorage from './useLocalStorage'
 
 const theme = createMuiTheme({
   palette: {
-    primary: {
-      main: '#1de9b6',
-    },
+    primary: indigo,
     secondary: amber,
   },
 })
@@ -72,7 +71,9 @@ function getPropStateDefaults(props) {
 
 function canRender(props = {}, propStates = {}) {
   const requiredProps = Object.entries(props).filter(entry => entry[1].required)
-  return requiredProps.length === 0 || requiredProps.some(entry => propStates[entry[0]])
+  return (
+    propStates && (requiredProps.length === 0 || requiredProps.some(entry => propStates[entry[0]]))
+  )
 }
 
 const socket = new WebSocket(`ws://${window.location.hostname}:8001`)
@@ -102,7 +103,6 @@ function ComponentDemo() {
     setPropStates(currentValues)
   }, [componentInfo])
 
-  console.log('TCL: ComponentDemo -> propStates', propStates)
   const canRenderComponent = componentInfo && canRender(componentInfo.props, propStates)
   return (
     <ThemeProvider theme={theme}>

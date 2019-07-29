@@ -1,10 +1,157 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { css } from '@emotion/core'
+import CloseIcon from '@material-ui/icons/Close'
+import IconButton from '@material-ui/core/IconButton'
+import AceEditor from 'react-ace'
+import Divider from '@material-ui/core/Divider'
+import indigo from '@material-ui/core/colors/indigo'
+import amber from '@material-ui/core/colors/amber'
+import Collapse from '@material-ui/core/Collapse'
+import 'brace/mode/json'
+import 'brace/theme/github'
 
-export default function EditDrawer({ open, setOpen }) {
-  const drawerCss = css`
-    height: ${open ? 0 : 0};
-    border-top: ${open ? 'solid 1px gray' : 'none'};
-  `
-  return <div css={drawerCss}>drawer contents</div>
+const styles = {
+  editDrawer: css`
+    border: solid 1px rgba(0, 0, 0, 0.12);
+    border-left: none;
+    border-right: none;
+    background-color: #fcfcfc;
+    transition: margin-right 0.2s ease-in-out;
+
+    & .ace_editor {
+      width: 100% !important;
+      height: 50vh !important;
+      max-height: 50vh !important;
+      box-sizing: border-box;
+      font-family: monaco;
+      font-weight: 500;
+    }
+  `,
+  header: css`
+    padding: 8px 12px;
+  `,
+  titleBar: css`
+    color: ${indigo[500]};
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+
+    & > span {
+      flex-grow: 2;
+    }
+
+    & > h4 {
+      padding: 0;
+      margin: 0;
+    }
+  `,
+  warningsLabel: css`
+    font-size: 12px;
+    margin-left: 16px;
+    color: ${amber[800]};
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  `,
+  warnings: css`
+    margin: 0;
+    /* padding-left: 8px; */
+    max-width: 100%;
+    overflow-x: scroll;
+  `,
+  warning: css`
+    color: red;
+    padding: 4px 0;
+    margin: 0;
+    max-width: 100%;
+    overflow-x: scroll;
+    font-size: 12px;
+  `,
+}
+
+export default function EditDrawer({ open, setOpen, editItem, updatePropState, setEditItem }) {
+  if (!editItem) return null
+  const [warningsOpen, setWarningsOpen] = useState(false)
+  const editorRef = React.useRef()
+  const style = {
+    display: open ? 'block' : 'none',
+  }
+
+  useEffect(() => {
+    if (!open) {
+      setOpen(true)
+    }
+  }, [editItem])
+
+  useEffect(() => {
+    editorRef.current.editor.setOptions({
+      displayIndentGuides: false,
+      wrapBehavioursEnabled: false,
+      cursor: 'smooth',
+    })
+  }, [])
+
+  const warningLength = editItem.warnings.length
+  const pluralWarnings = warningLength > 1
+
+  return (
+    <div css={styles.editDrawer} style={style} className="demo-font">
+      <div css={styles.header}>
+        {/* TITLE */}
+        <div css={styles.titleBar}>
+          <h4 className="demo-font">{editItem.propName}</h4>
+          {warningLength > 0 && (
+            // eslint-disable-next-line
+            <div css={styles.warningsLabel} onClick={() => setWarningsOpen(!warningsOpen)}>
+              {editItem.warnings.length} warning{pluralWarnings && 's'}
+            </div>
+          )}
+          <span />
+
+          {/* CLOSE BUTTON */}
+          <IconButton size="small" onClick={() => setOpen(false)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </div>
+
+        {/* WARNINGS */}
+        {warningLength > 0 && (
+          <Collapse in={warningsOpen}>
+            <div css={styles.warnings}>
+              {editItem.warnings.map(warning => (
+                <div css={styles.warning}>{warning}</div>
+              ))}
+            </div>
+          </Collapse>
+        )}
+      </div>
+      <Divider />
+      <AceEditor
+        ref={editorRef}
+        mode="json"
+        showPrintMargin={false}
+        editorProps={{
+          displayIndentGuides: false,
+        }}
+        value={
+          typeof editItem.value === 'object'
+            ? JSON.stringify(editItem.value, null, 4)
+            : editItem.value
+        }
+        theme="github"
+        name="test editor"
+        onChange={newText => {
+          try {
+            const newValue = eval(`() => (${newText})`)() // eslint-disable-line
+            updatePropState(editItem.propName, newValue) // eslint-disable-line
+            setEditItem({ ...editItem, value: newText })
+          } catch (e) {
+            console.error(e)
+          }
+        }}
+      />
+    </div>
+  )
 }

@@ -4,6 +4,7 @@
 // use `npm start` command to launch the server.
 const webpack = require('webpack')
 const middleware = require('webpack-dev-middleware')
+const hotMiddleware = require('webpack-hot-middleware')
 const path = require('path')
 const fs = require('fs')
 const express = require('express')
@@ -46,6 +47,7 @@ app.use(
   middleware(compiler, {
     noInfo: true,
     publicPath: '/',
+    hot: true,
     stats: {
       builtAt: false,
       colors: true,
@@ -59,6 +61,9 @@ app.use(
     },
   })
 )
+
+const wphmw = hotMiddleware(compiler)
+app.use(wphmw)
 
 app.use('/', (req, res, next) => {
   const indexPath = path.join(compiler.outputPath, 'index.html')
