@@ -2,6 +2,7 @@ import React from 'react'
 import { css } from '@emotion/core'
 import Button from '@material-ui/core/Button'
 import EditIcon from '@material-ui/icons/Edit'
+import amber from '@material-ui/core/colors/amber'
 
 const styles = {
   objectContainer: css`
@@ -18,6 +19,10 @@ const styles = {
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    [data-required='true'] & .MuiButton-label {
+      color: ${amber[900]};
     }
   `,
 }

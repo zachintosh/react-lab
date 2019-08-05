@@ -6,6 +6,7 @@ import getInput from './lib/get-input'
 const styles = {
   propsContainer: css`
     padding: 8px 16px;
+    min-width: 250px;
     box-sizing: border-box;
     display: grid;
     grid-row-gap: 8px;
@@ -41,6 +42,7 @@ export default function PropsDrawer({
 
   const entries = Object.entries(propObjects)
   const inputs = entries.reduce((acc, entry) => {
+    if (!entry[1] || !entry[1].type) return acc
     if (!acc[entry[1].type.name]) acc[entry[1].type.name] = []
     acc[entry[1].type.name].push(entry)
     return acc

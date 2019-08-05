@@ -10,6 +10,7 @@ import WarningIcon from '@material-ui/icons/ErrorOutline'
 import DemoWrapper from './DemoWrapper'
 import { isJson, removeQuotes } from './lib/helpers'
 import useLocalStorage from './useLocalStorage'
+import canRender from './lib/can-render'
 
 const theme = createMuiTheme({
   palette: {
@@ -69,13 +70,6 @@ function getPropStateDefaults(props) {
   }, {})
 }
 
-function canRender(props = {}, propStates = {}) {
-  const requiredProps = Object.entries(props).filter(entry => entry[1].required)
-  return (
-    propStates && (requiredProps.length === 0 || requiredProps.some(entry => propStates[entry[0]]))
-  )
-}
-
 const socket = new WebSocket(`ws://${window.location.hostname}:8001`)
 
 function ComponentDemo() {
@@ -87,6 +81,9 @@ function ComponentDemo() {
       const message = JSON.parse(e.data)
       setComponentInfo(message)
     })
+
+    // Let the server know we're ready for the component info
+    socket.send('CONNECTED')
   }, [])
 
   useEffect(() => {

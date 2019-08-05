@@ -23,7 +23,7 @@ const styles = {
       height: 50vh !important;
       max-height: 50vh !important;
       box-sizing: border-box;
-      font-family: monaco;
+      font-family: monospace;
       font-weight: 500;
     }
   `,
@@ -71,30 +71,39 @@ const styles = {
   `,
 }
 
+/** A bottom-opening drawer containing an editor. Allows the user to edit the prop state for objects, shapes, and exact shapes. */
 export default function EditDrawer({ open, setOpen, editItem, updatePropState, setEditItem }) {
   if (!editItem) return null
   const [warningsOpen, setWarningsOpen] = useState(false)
   const editorRef = React.useRef()
+  const warningLength = editItem.warnings.length
+  const pluralWarnings = warningLength > 1
   const style = {
     display: open ? 'block' : 'none',
   }
 
+  /** Close the drawer and remove the current edit item */
+  function handleClose() {
+    setOpen(false)
+    setEditItem(null)
+  }
+
+  /** If an editItem was set, and the drawer isn't open, open it */
   useEffect(() => {
-    if (!open) {
+    if (!open && editItem) {
       setOpen(true)
     }
   }, [editItem])
 
+  /** Set the ace editor options */
   useEffect(() => {
     editorRef.current.editor.setOptions({
       displayIndentGuides: false,
       wrapBehavioursEnabled: false,
       cursor: 'smooth',
+      useWorker: false,
     })
   }, [])
-
-  const warningLength = editItem.warnings.length
-  const pluralWarnings = warningLength > 1
 
   return (
     <div css={styles.editDrawer} style={style} className="demo-font">
@@ -111,7 +120,7 @@ export default function EditDrawer({ open, setOpen, editItem, updatePropState, s
           <span />
 
           {/* CLOSE BUTTON */}
-          <IconButton size="small" onClick={() => setOpen(false)}>
+          <IconButton size="small" onClick={handleClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>
@@ -127,7 +136,10 @@ export default function EditDrawer({ open, setOpen, editItem, updatePropState, s
           </Collapse>
         )}
       </div>
+
       <Divider />
+
+      {/* EDITOR */}
       <AceEditor
         ref={editorRef}
         mode="json"
@@ -144,7 +156,7 @@ export default function EditDrawer({ open, setOpen, editItem, updatePropState, s
         name="test editor"
         onChange={newText => {
           try {
-            const newValue = eval(`() => (${newText})`)() // eslint-disable-line
+            const newValue = newText ? eval(`() => (${newText})`)() : undefined // eslint-disable-line
             updatePropState(editItem.propName, newValue) // eslint-disable-line
             setEditItem({ ...editItem, value: newText })
           } catch (e) {

@@ -38,11 +38,16 @@ if (process.argv[2]) {
 
 if (!filePath) console.error(`No file available on path: ${fileName}`)
 
+/**
+ * @description Reads in and parses the component file with react-docgen
+ * @returns {string} The react-docgen parsed value as a string
+ */
 function parseComponentFile() {
   const fileContents = fs.readFileSync(filePath, 'utf8')
   return JSON.stringify(reactDocs.parse(fileContents))
 }
 
+/** Add the middleware for webpack-dev-server */
 app.use(
   middleware(compiler, {
     noInfo: true,
@@ -62,9 +67,11 @@ app.use(
   })
 )
 
+/** Add the middleware for hot-module-reloading */
 const wphmw = hotMiddleware(compiler)
 app.use(wphmw)
 
+/** Add the endpoint for the user to access the lab */
 app.use('/', (req, res, next) => {
   const indexPath = path.join(compiler.outputPath, 'index.html')
   // eslint-disable-next-line consistent-return
@@ -76,9 +83,15 @@ app.use('/', (req, res, next) => {
   })
 })
 
+/** Add handlers for the web socket that the component doc information will be handled on */
 wss.on('connection', ws => {
   componentInfo = parseComponentFile()
-  ws.send(componentInfo)
+
+  ws.on('message', message => {
+    if (message === 'CONNECTED') {
+      ws.send(componentInfo)
+    }
+  })
 
   // Watch the file for any changes to it's documentation (proptypes, name, default prop values, etc.)
   fs.watchFile(filePath, { interval: 1000 }, () => {
@@ -92,6 +105,7 @@ wss.on('connection', ws => {
   })
 })
 
+/** Start that sucker up */
 app.listen(port, err => {
   if (err) {
     console.log(err)

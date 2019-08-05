@@ -104,15 +104,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /demo\.js/,
-        loader: 'imports-loader?parsePropTypes=parse-prop-types',
-      },
-      {
         test: /\.js$/,
         include: [
-          path.resolve('.', 'src'),
+          path.resolve('.'),
           path.resolve(__dirname, 'src'),
-          path.resolve(__dirname, 'node_modules/@fs'),
           path.resolve('node_modules/@fs'),
         ],
         exclude: /node_modules\/(?!@fs)/,

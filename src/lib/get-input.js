@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { css } from '@emotion/core'
 import StringNumberInput from '../Inputs/StringNumberInput'
 import BooleanInput from '../Inputs/BooleanInput'
 import EnumInput from '../Inputs/EnumInput'
@@ -66,5 +67,12 @@ export default function getInput([propName, propObj], propStates, updatePropStat
       />
     ),
   }
-  return <div key={propName}>{inputMap[propObj.type.name] || propName}</div>
+
+  const isMissingRequired = propObj.required && !propStates[propName]
+
+  return (
+    <div key={propName} data-required={isMissingRequired}>
+      {inputMap[propObj.type.name] || propName}
+    </div>
+  )
 }
