@@ -70,20 +70,26 @@ function getPropStateDefaults(props) {
   }, {})
 }
 
-const socket = new WebSocket(`ws://${window.location.hostname}:8001`)
-
 function ComponentDemo() {
   const [componentInfo, setComponentInfo] = useState()
   const [propStates, setPropStates, setKey] = useLocalStorage()
 
+  function resetToDefaults() {
+    setPropStates(getPropStateDefaults(componentInfo.props))
+  }
+
+  // WEB SOCKET
   useEffect(() => {
+    const socket = new WebSocket(`ws://${window.location.hostname}:8001`)
     socket.addEventListener('message', e => {
       const message = JSON.parse(e.data)
       setComponentInfo(message)
     })
 
     // Let the server know we're ready for the component info
-    socket.send('CONNECTED')
+    socket.onopen = () => {
+      socket.send('CONNECTED')
+    }
   }, [])
 
   useEffect(() => {
@@ -109,6 +115,7 @@ function ComponentDemo() {
           propObjects={componentInfo.props}
           propStates={propStates}
           setPropStates={setPropStates}
+          resetToDefaults={resetToDefaults}
         >
           {/* DEMO COMPONENT */}
           {canRenderComponent && <DemoComponent {...propStates} />}

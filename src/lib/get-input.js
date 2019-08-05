@@ -1,12 +1,9 @@
 import React from 'react'
-
-import { css } from '@emotion/core'
 import StringNumberInput from '../Inputs/StringNumberInput'
 import BooleanInput from '../Inputs/BooleanInput'
 import EnumInput from '../Inputs/EnumInput'
 import ObjectInput from '../Inputs/ObjectInput'
 import ShapeInput from '../Inputs/ShapeInput'
-import ArrayInput from '../Inputs/ArrayInput'
 
 export default function getInput([propName, propObj], propStates, updatePropState, setEditItem) {
   const inputMap = {

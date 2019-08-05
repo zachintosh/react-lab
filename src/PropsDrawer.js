@@ -1,6 +1,7 @@
 import React from 'react'
 import { css } from '@emotion/core'
 import amber from '@material-ui/core/colors/amber'
+import Button from '@material-ui/core/Button'
 import getInput from './lib/get-input'
 
 const styles = {
@@ -28,6 +29,8 @@ const styles = {
     background-color: #fcfcfc;
     transition: margin-right 0.2s ease-in-out;
     border: solid 1px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
   `,
 }
 
@@ -37,6 +40,7 @@ export default function PropsDrawer({
   open,
   setEditItem,
   updatePropState,
+  resetToDefaults,
 }) {
   if (!propObjects) return null
 
@@ -67,6 +71,9 @@ export default function PropsDrawer({
         {inputs.shape && inputs.shape.map(getInputProp)}
         {inputs.exact && inputs.exact.map(getInputProp)}
         {inputs.bool && inputs.bool.map(getInputProp)}
+        <Button size="small" color="primary" onClick={resetToDefaults}>
+          Reset to Defaults
+        </Button>
       </div>
     </div>
   )

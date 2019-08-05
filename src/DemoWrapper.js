@@ -68,6 +68,7 @@ export default function DemoWrapper({
   children,
   propStates,
   setPropStates,
+  resetToDefaults,
 }) {
   const [propsDrawerOpen, setPropsDrawerOpen] = useLocalStorage('propsDrawerOpen', true)
   const [editDrawerOpen, setEditDrawerOpen] = useLocalStorage('editDrawerOpen', true)
@@ -110,6 +111,7 @@ export default function DemoWrapper({
             propObjects={propObjects}
             setEditItem={setEditItem}
             updatePropState={updatePropState}
+            resetToDefaults={resetToDefaults}
           />
 
           {/* DEMO COMPONENT */}
